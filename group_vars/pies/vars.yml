@@ -1,0 +1,15 @@
+ansible_python_interpreter: /usr/bin/python3
+ansible_user: pi
+
+wifi_ssid: "{{ vault_wifi_ssid }}"
+# Use psk for better security. Leave blank if passphrase to be used instead
+wifi_psk: "{{ vault_wifi_psk }}"
+wifi_passphrase: "{{ vault_wifi_passphrase }}"
+wifi_country: NZ
+
+pi_password_hash: "{{ vault_pi_password_hash }}"
+
+# Entry from /usr/share/i18n/SUPPORTED
+locale: "en_NZ.UTF-8"
+# Directory off /usr/share/zoneinfo/
+timezone: "Pacific/Auckland"

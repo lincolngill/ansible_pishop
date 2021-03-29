@@ -1,0 +1,22 @@
+---
+#
+# Playbook to prepare USB Raspberyy OS (aka. Raspian) image prior to first boot
+#
+# Plants wifi wpa_supplicant.conf in <image>/boot
+# Updates hostname - Based on inventory host alias
+# Sets up ssh authorised key
+#
+# Prep:
+#   Put one host in newpicamera inventory group
+#   Flash Raspberry OS to SD card
+#   Mount SD on localhost
+#   Run this playbook (./doit.sh 1, or):
+#      ansible-playbook prepimage.yml -i hosts --vault-id gills@~/ansible-vpw
+#
+- name: Prepare USB Raspian image
+  hosts: newpi
+  gather_facts: no
+
+  tasks:
+    - import_role:
+        name: newpi

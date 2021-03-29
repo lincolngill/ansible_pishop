@@ -1,0 +1,18 @@
+---
+# Common setup for all Raspberry Pies
+# Refer README.md
+#
+- import_tasks: distupgrade.yml
+  tags: distupgrade
+
+- import_tasks: setpw.yml
+  tags: setpw
+
+- import_tasks: installsw.yml
+  tags: installsw
+
+- import_tasks: raspiconf.yml
+  tags: raspiconf
+
+- import_tasks: disablewireless.yml
+  tags: disablewireless

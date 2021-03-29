@@ -1,0 +1,20 @@
+[picameras]
+cam1pi.local
+cam2pi.local
+cam3pi.local
+
+[picameras:children]
+newpi
+
+[newpi]
+# Group to identify sever for local image maniplation by prepimage.yml playbook.
+# Only put one server in this group at a time.
+
+[pies:children]
+picameras
+
+[cameras:children]
+picameras
+
+[all:vars]
+allow_reboots=True

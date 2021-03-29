@@ -1,0 +1,15 @@
+---
+# Refer to README.md
+#
+# Defaults:
+gocv_ver: v0.26.0
+gocv_mod: gocv.io/x/gocv
+gocv_gopath: /home/pi/go
+gocv_setup_egs: [
+  version,
+  mjpeg-streamer
+]
+
+# Derived:
+# Warning - In older versions of go the mod download directory tree may have had a different structure.
+gocv_mod_path: "{{ gocv_gopath }}/pkg/mod/{{ gocv_mod }}@{{ gocv_ver }}"

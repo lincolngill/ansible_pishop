@@ -1,0 +1,7 @@
+---
+# Install packages
+
+- name: Install vim
+  package:
+    name: vim
+    state: present

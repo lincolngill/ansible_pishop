@@ -1,0 +1,20 @@
+---
+#
+# Playbook setup gocv Pi security camera
+#
+- name: Pi security camera setup
+  hosts: picameras
+  gather_facts: yes
+
+  tasks:
+    # picamera role depends on pi role
+    - import_role:
+        name: picamera
+      become: yes
+    - import_role:
+        name: godev
+      become: yes
+      tags: godev
+    - import_role:
+        name: gocv
+      tags: gocv

@@ -1,0 +1,93 @@
+---
+# Setup Golang Development
+#
+# If current go version != desired version then uninstall current version.
+# 
+- name: Get go version
+  shell: "go version | sed 's/.*go\\([0-9.]\\+\\).*/\\1/'"
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
+  register: go_ver
+  changed_when: False
+
+- name: Set go_version fact
+  set_fact: go_version="{{ go_ver.stdout | trim }}"
+
+- debug: msg="go version. Got {{ go_version }} Want {{ godev_gover }}"
+
+# Download the desired tarball before attempting to uninstall the existing version
+# playbook will stop if this fails.
+- name: Download {{ godev_tarball }}
+  block:
+  - debug: msg="ansible_env.HOME={{ ansible_env.HOME }}"
+
+  - name: Download {{ godev_tarball }}
+    get_url:
+      url: "{{ godev_download_url }}/{{ godev_tarball }}"
+#      checksum: "{{ godev_tarball_chksum }}"
+      dest: "{{ ansible_env.HOME }}/{{ godev_tarball }}"
+      force: no
+
+  vars:
+    comment_line: "# Download go tarball"
+  when: go_version == "" or go_version != godev_gover
+
+# Uninstall ######################################
+- name: Uninstall current go if not desired version
+  block:
+    - debug: msg="Uninstalling go {{ go_version }}"
+
+    - name: Remove apt go package
+      apt:
+        name: go
+        state: absent
+
+    - name: Remove /etc/profile.d/go_path.sh
+      file:
+        path: /etc/profile.d/go_path.sh
+        state: absent
+
+    - name: Remove /usr/local/go
+      file:
+        path: /usr/local/go
+        state: absent
+
+  vars:
+    comment_line: "# Uninstall current go"
+  when: go_version != "" and go_version != godev_gover
+
+# Install ########################################
+- name: Install go
+  block:
+  - name: Unpack go tarball {{ godev_tarball }}
+    unarchive:
+      src: "{{ ansible_env.HOME }}/{{ godev_tarball }}"
+      dest: /usr/local
+      remote_src: yes
+      creates: /usr/local/go
+
+  - name: Add /usr/local/go/bin to PATH via /etc/profile.d/
+    copy:
+      dest: /etc/profile.d/go_path.sh
+      content: 'PATH=$PATH:/usr/local/go/bin'
+
+  - name: Get go version
+    shell: "go version | sed 's/.*go\\([0-9.]\\+\\).*/\\1/'"
+    args:
+      executable: /bin/bash
+    environment:
+      PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
+    register: go_ver
+    changed_when: False
+
+  - name: Set go_version fact
+    set_fact: go_version="{{ go_ver.stdout | trim }}"
+
+  vars:
+    comment_line: "# Install go"
+  when: go_version == "" or go_version != godev_gover
+
+- name: go version
+  debug: msg={{ go_version }}

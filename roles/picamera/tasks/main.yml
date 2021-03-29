@@ -1,0 +1,7 @@
+---
+# Setup pi as kerberios.io camera
+# Refer README.md
+#
+
+- import_tasks: configcamera.yml
+  tags: configcamera

@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+#
+# Make gocv
+# Refer: https://gocv.io/getting-started/linux/
+#
+# Creates and runs in a detached screen session, so you can reattach (screen -r make_gocv) and detach (ctrl-a ctrl-d), at will.
+# Logs all output
+# Logs the status of each task and only runs tasks that have not completed successfully already.
+#
+# Note: Script is created by ansible. Edit ansible template rather than this file.
+
+MAKESRCDIR="{{ gocv_mod_path }}"
+LOGFILE=~/gocv_make.log
+STATUSLOG=~/gocv_make_tasks.log
+
+# Log a message
+fn_log() {
+	MSG="$1"
+	LVL="${2:-INFO }"
+	echo "$(date --iso-8601=seconds) $LVL $MSG"
+}
+
+# Log an error and terminate if RC!=0
+fn_err() {
+	MSG="$1"
+	RC=${2:-0}
+	fn_log "$MSG" "ERROR"
+	if [ $RC -ne 0 ]; then
+		exit $RC
+	fi
+}
+
+# Record and log a task status
+# The task status log is kept across multiple invocations.
+# The status log is searched to determine if a task has already run or not.
+fn_logstatus() {
+	TASKNAME="$1"
+	STATUS="$2"
+	RC=${3:-0}
+	MSG="$TASKNAME $STATUS"
+	if [ $RC -ne 0 ]; then
+		MSG="$MSG RC=$RC"
+		echo "$(date --iso-8601=seconds) $MSG" >> $STATUSLOG
+		fn_err "$MSG" $RC
+	fi
+	echo "$(date --iso-8601=seconds) $MSG" >> $STATUSLOG
+	fn_log "$MSG"
+}
+
+# Run a task
+# Skips tasks that already have a "COMPLETE" status in the task log file.
+fn_dotask() {
+	TASKNAME="$1"
+	CMD="$2"
+    # Check if task has already been done
+	DONE=$(grep "$TASKNAME COMPLETE" $STATUSLOG)
+	if [ -n "$DONE" ]; then
+		fn_logstatus "$TASKNAME" "SKIPPED"
+		return
+	fi
+	fn_logstatus "$TASKNAME" "STARTED"
+    # eval the command string to support compound commands. E.g. "whoami; sleep 5"
+	time (eval $CMD)
+	RC=$?
+	if [ $RC -eq 0 ]; then
+		fn_logstatus "$TASKNAME" "COMPLETE"
+	else
+		fn_logstatus "$TASKNAME" "FAILED" $RC
+	fi
+}
+
+FORCE=""
+while getopts "f" ARG; do
+	case $ARG in
+		f) FORCE=Y ;;
+	esac
+done
+
+# ReStart the Script in a dettached screen (with logging)
+# "screen -r make_gocv" to reattach
+# Can ctrl-a ctrl-d to detach and logout.
+# Screen will terminate when script exits
+# Log file will contain all output (including timing from time keyword).
+if [ -z "$STY" ]; then
+    # Check if already run or running. Error out unless -f set.
+    if [[ -z "$FORCE" && -f "$LOGFILE" ]]; then
+        echo "ERROR: Already run or running. Use -f to force." >&2
+        exit 1
+    fi
+	fn_log "Starting screen" | tee $LOGFILE
+	exec screen -d -m -L -Logfile $LOGFILE -S make_gocv /usr/bin/bash "$0"
+	echo "Should never see this!"
+	exit
+fi
+
+# Run the make tasks
+fn_logstatus "Make GOCV" "STARTED"
+cd "$MAKESRCDIR"
+fn_dotask "DEPS"     "make deps"
+fn_dotask "DOWNLOAD" "make download"
+fn_dotask "BUILD"    "make build"
+fn_dotask "INSTALL"  "make sudo_install"
+fn_dotask "VERSION"  "go run ./cmd/version/main.go"
+fn_logstatus "Make GOCV" "COMPLETE"

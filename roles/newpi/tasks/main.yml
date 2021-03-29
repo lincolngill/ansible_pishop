@@ -1,0 +1,56 @@
+---
+# Refer README.md
+#
+- name: Copy wpa_supplicant.conf to {{ newpi_bootdir }}
+  template:
+    src: templates/wpa_supplicant.conf.j2
+    dest: "{{ newpi_bootdir }}/wpa_supplicant.conf"
+  delegate_to: localhost
+
+- name: Create {{ newpi_bootdir }}/ssh to trigger ssh service setup
+  copy:
+    content: ""
+    dest: "{{ newpi_bootdir }}/ssh"
+  delegate_to: localhost
+
+- name: Update {{ newpi_rootfsdir }}/etc/hosts 127.0.1.1 to {{ inventory_hostname_short }}
+  lineinfile:
+    path: "{{ newpi_rootfsdir }}/etc/hosts"
+    regexp: '^127\.0\.1\.1'
+    line: "127.0.1.1 {{ inventory_hostname_short }}"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  delegate_to: localhost
+
+- name: Set {{ newpi_rootfsdir }}/etc/hostname to {{ inventory_hostname_short }}
+  copy:
+    content: "{{ inventory_hostname_short }}"
+    dest: "{{ newpi_rootfsdir }}/etc/hostname"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  delegate_to: localhost
+
+- name: Create {{ newpi_rootfsdir }}/home/pi/.ssh directory
+  file:
+    path: "{{ newpi_rootfsdir }}/home/pi/.ssh"
+    state: directory
+    mode: '0700'
+    owner: '1000'
+    group: '1000'
+  delegate_to: localhost
+  
+- name: Set ssh authorised key
+  lineinfile:
+    create: yes
+    path: "{{ newpi_rootfsdir }}/home/pi/.ssh/authorized_keys"
+    line: "{{ lookup('file', newpi_pubkeyfile) }}"
+    mode: '0600'
+    owner: '1000'
+    group: '1000'
+  delegate_to: localhost
+
+- debug: msg="Put SD card into pi and move {{ inventory_hostname_short }} out of newpi inventory group"

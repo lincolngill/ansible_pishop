@@ -1,0 +1,13 @@
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country={{ wifi_country }}
+
+network={
+    ssid="{{ wifi_ssid }}"
+{% if wifi_psk %}
+    psk={{ wifi_psk }}
+{% else %}
+    psk="{{ wifi_passphrase }}"
+{% endif %}
+    key_mgmt=WPA-PSK
+}

@@ -1,0 +1,8 @@
+---
+- name: Reboot
+  reboot:
+    post_reboot_delay: 20
+  when: allow_reboots == True
+
+- name: Show allow_reboots
+  debug: msg="Reboots allowed - {{ allow_reboots }}"

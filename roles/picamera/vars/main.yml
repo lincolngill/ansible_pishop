@@ -1,0 +1,4 @@
+---
+# Role variables
+
+picamera_enable_camera: True

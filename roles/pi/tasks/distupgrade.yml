@@ -1,0 +1,9 @@
+---
+# Run:
+#  apt update
+#  apt dist-upgrade
+#
+- name: apt dist-upgrade
+  apt:
+    update_cache: yes
+    upgrade: dist

@@ -1,0 +1,13 @@
+---
+#
+# Playbook to reboot the Pi security camera
+#
+- name: Pi security camera setup
+  hosts: picameras
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Reboot
+      reboot:
+        post_reboot_delay: 20

@@ -1,0 +1,27 @@
+---
+# Configure pi
+# raspi-config
+
+- name: Get camera status
+  shell: "raspi-config nonint get_camera"
+  register: camera_status
+  changed_when: False
+
+- debug:
+    msg:
+      - "Camera status. 0=Enabled - {{ camera_status.stdout }}"
+      - "Camera setting. Enable - {{ picamera_enable_camera }}"
+
+- name: Enable camera
+  shell: "raspi-config nonint do_camera 0"
+  when: (picamera_enable_camera == True) and (camera_status.stdout != '0')
+  notify:
+    - Show allow_reboots
+    - Reboot
+
+- name: Disable camera
+  shell: "raspi-config nonint do_camera 1"
+  when: (picamera_enable_camera == False) and (camera_status.stdout != '1')
+  notify:
+    - Show allow_reboots
+    - Reboot

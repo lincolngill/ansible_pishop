@@ -1,0 +1,13 @@
+---
+# Required:
+# wifi_ssid
+# wifi_psk or wifi_passphrase
+# wifi_country
+
+# Used:
+# inventory_hostname_short
+
+# Defaults:
+newpi_bootdir: "{{ '/run/media/'+lookup('env', 'USER')+'/boot' }}"
+newpi_rootfsdir: "{{ '/run/media/'+lookup('env', 'USER')+'/rootfs' }}"
+newpi_pubkeyfile: "{{ lookup('env', 'HOME')+'/.ssh/id_rsa.pub' }}"

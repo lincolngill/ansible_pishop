@@ -1,0 +1,69 @@
+---
+# Build OpenCV using gocv make file
+
+- name: Install git
+  apt:
+    name: git
+    state: present
+  become: yes
+
+- name: Get {{ gocv_mod }}
+  shell: "go get -u -d {{ gocv_mod }}"
+  args:
+    executable: /bin/bash
+    creates: "{{ gocv_mod_path }}"
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
+
+- name: Install screen
+  apt:
+    name: screen
+    state: present
+  become: yes
+
+- name: Copy make_gocv.sh to /home/pi
+  template:
+    src: templates/make_gocv.sh.j2
+    dest: /home/pi/make_gocv.sh
+    mode: '0755'
+    owner: pi
+    group: pi
+
+# Runs a detached screen in the background, to asynchonously build gocv.
+# Script only runs make steps that haven't completed sucessfully.
+- name: Run /home/pi/make_gocv.sh (Takes a long time. Runs as a detached screen)
+  shell: "/home/pi/make_gocv.sh"
+  args:
+    executable: /bin/bash
+    creates: /usr/local/lib/libopencv_core.so
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
+
+# The following steps may not work if the make_gocv is still running. Needs testing.
+- name: Create example directories
+  file:
+    path: "/home/pi/godev/{{ item }}"
+    mode: '0755'
+    state: directory
+  loop: "{{ gocv_setup_egs }}"
+
+- name: Init example modules
+  shell: "(go mod init examples.com/{{ item }}) && (go get {{ gocv_mod }})"
+  args:
+    executable: /bin/bash
+    chdir: "/home/pi/godev/{{ item }}"
+    creates: "/home/pi/godev/{{ item }}/go.mod"
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
+  loop: "{{ gocv_setup_egs }}"
+
+- name: Copy examples to /home/pi/godev
+  copy:
+    remote_src: yes
+    src: "{{ gocv_mod_path }}/cmd/{{ item }}/main.go"
+    dest: "/home/pi/godev/{{ item }}/"
+    mode: '0644'
+    owner: pi
+    group: pi
+    force: no # Only copy if the file doesn't already exist. So doesn't overwrite post copy modifications
+  loop: "{{ gocv_setup_egs }}"

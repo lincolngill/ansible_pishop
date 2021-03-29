@@ -1,0 +1,55 @@
+---
+# Configure pi
+# raspi-config
+#  1) Update raspi-config
+#  2) Set locale
+#  3) Set timezone
+
+#Get some basic info
+- name: Show pi version
+  block:
+  - name: Get Raspberry Pi type
+    shell: "raspi-config nonint get_pi_type"
+    register: pi_type
+    changed_when: False
+
+  - name: Show pi version 
+    debug:
+      msg: "Pi version: {{ pi_type.stdout }}"
+  when: pi_show_pi_version | bool
+
+- name: Update raspi-config
+  become: true
+  apt:
+    name: raspi-config
+    update_cache: yes
+
+- name: Check /etc/default/locale
+  lineinfile:
+    path: /etc/default/locale
+    regexp: "{{ locale }}"
+    state: absent
+  check_mode: yes
+  changed_when: false
+  register: locale_check
+
+- debug: msg="locale {{ locale }} found - {{ locale_check.found }}"
+
+- name: Change locale
+  shell: "raspi-config nonint do_change_locale {{ locale }}"
+  when: not locale_check.found
+
+- name: Check /etc/timezone
+  lineinfile:
+    path: /etc/timezone
+    regexp: "{{ timezone }}"
+    state: absent
+  check_mode: yes
+  changed_when: false
+  register: tz_check
+
+- debug: msg="Timezone {{ timezone }} found - {{ tz_check.found }}"
+
+- name: Change timezone
+  shell: "raspi-config nonint do_change_timezone {{ timezone }}"
+  when: not tz_check.found

@@ -1,0 +1,26 @@
+---
+# Disable Wifi and/or Bluetooth wireless
+
+- name: Disable wireless
+  block:
+  - name: Insert disable wireless comment
+    lineinfile:
+      path: /boot/config.txt
+      line: "{{ comment_line }}"
+      state: present
+
+  - name: Disable wireless radio
+    lineinfile:
+      path: /boot/config.txt
+      line: "dtoverlay=disable-{{ item }}"
+      insertafter: "{{ comment_line }}"
+      state: present
+    loop:
+      - wifi
+      - bt
+    notify:
+      - Show allow_reboots
+      - Reboot
+  vars:
+    comment_line: "# LG - Ansible Disable wireless"
+  when: pi_disable_wireless == True

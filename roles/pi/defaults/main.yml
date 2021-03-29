@@ -1,0 +1,9 @@
+---
+# Required:
+# pi_password
+# locale
+# timezone
+
+# Defaults:
+pi_show_pi_version: false
+pi_disable_wireless: false

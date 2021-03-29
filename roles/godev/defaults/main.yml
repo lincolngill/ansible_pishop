@@ -1,0 +1,11 @@
+---
+# Refer to README.md
+#
+# Defaults:
+godev_gover: "1.16.2"
+godev_download_url: https://golang.org/dl
+
+# Derived:
+### Note RPi 4 is an ARM8 cpu but running in 32-bit compatibiity mode.
+# It reports itself as an ARM7 and cannot use the arm64 tar ball
+godev_tarball: "go{{ godev_gover }}.linux-armv6l.tar.gz"

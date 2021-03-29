@@ -1,0 +1,13 @@
+---
+# Secure the pi account with a strong password
+#
+- name: Pi user password info
+  debug:
+    msg:
+    - "Password Hash: {{ pi_password_hash }}"
+    verbosity: 1
+
+- name: Set pi password
+  user:
+    name: pi
+    password: "{{ pi_password_hash }}"
