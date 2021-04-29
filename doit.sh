@@ -4,7 +4,7 @@
 #
 STEP=${1:-1}
 LIMIT="${2}"
-PLAY="${3:-picameras}"
+PLAY="${3:-pivpn}"
 TAGS="${4}"
 AOPT=""
 if [ -n "$LIMIT" ]; then
@@ -34,5 +34,8 @@ case $STEP in
     5) fn_run "ansible-galaxy init roles/newrole" ;;
     # List facts
     6) fn_run "ansible -i hosts -m setup --vault-id ${VAULT_ID} $LIMIT" ;;
+    10) fn_run "ansible-vault view --vault-id ${VAULT_ID} group_vars/pies/vault.yml" ;;
+    11) fn_run "ansible-vault edit --vault-id ${VAULT_ID} roles/pivpn/defaults/main/vault.yml" ;;
+    12) fn_run "ansible-vault edit --vault-id ${VAULT_ID} roles/afraid_ddns/defaults/main/vault.yml" ;;
     *) echo "Usage: doit.sh [<step>] [<ansible_limit>]" >&2; exit 1 ;;
 esac

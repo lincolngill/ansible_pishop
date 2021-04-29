@@ -1,0 +1,19 @@
+---
+# Setup pi WireGuard VPN
+# Refer README.md
+#
+
+- import_tasks: ufw.yml
+  tags: ufw
+
+- import_tasks: pivpn.yml
+  tags: pivpn
+
+- import_tasks: wg.yml
+  tags: wg
+
+- import_tasks: clients.yml
+  tags: clients
+
+- import_tasks: unattended_upgrades.yml
+  tags: unattended

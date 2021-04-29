@@ -1,0 +1,156 @@
+---
+# Install WireGuard
+
+- name: Install raspberrypi-kernel-headers wireguard-tools wireguard-dkms qrencode
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - raspberrypi-kernel-headers
+    - wireguard-tools
+    - wireguard-dkms
+    - qrencode
+
+- name: mkdir pivpn directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+  with_items:
+  - "{{ wg_config_dir }}/keys"
+  - "{{ wg_config_dir }}/configs"
+
+- name: Create empty {{ wg_config_dir }}/configs/clients.txt
+  shell: "touch {{ wg_config_dir }}/configs/clients.txt"
+  args:
+    executable: /bin/bash
+    creates: "{{ wg_config_dir }}/configs/clients.txt"
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+- name: Generate WireGuard server keys
+  shell: "wg genkey | tee {{ wg_config_dir }}/keys/server_priv | wg pubkey > {{ wg_config_dir }}/keys/server_pub"
+  args:
+    executable: /bin/bash
+    creates: "{{ wg_config_dir }}/keys/server_priv"
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+- name: Set server key file permissions and owner
+  file:
+    path: "{{ item }}"
+    state: file
+    mode: '0600'
+    owner: root
+    group: root
+  loop:
+  - "{{ wg_config_dir }}/keys/server_priv"
+  - "{{ wg_config_dir }}/keys/server_pub"
+
+- name: Check that the /etc/wireguard/{{ wg_vpn_dev }}.conf exists
+  stat:
+    path: "/etc/wireguard/{{ wg_vpn_dev }}.conf"
+  register: wg_conf_file
+
+#- name: Create wg0 interface dev and save to /etc/wireguard/wg0.conf
+#  shell: "{{ item }}"
+#  args:
+#    executable: /bin/bash
+#  environment:
+#    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+#  loop:
+#  - "ip link add dev wg0 type wireguard"
+#  - "ip address add dev wg0 {{ wg_address }}"
+#  - "wg set wg0 listen-port {{ wg_listen_port }} private-key {{ wg_keys_dir }}/server_priv"
+#  - "wg-quick save wg0"
+#  when: not wg0_conf_file.stat.exists
+
+- name: Create {{ wg_vpn_dev }} config for wg-quick
+  block:
+  - name: Create /etc/wireguard/{{ wg_vpn_dev }}.conf
+    template:
+      src: templates/wg.conf.j2
+      dest: "/etc/wireguard/{{ wg_vpn_dev }}.conf"
+      force: no
+      mode: 0600
+      owner: root
+      group: root
+  - name: Add private key to /etc/wireguard/{{ wg_vpn_dev }}.conf
+    shell: 'echo "PrivateKey = $(cat {{ wg_config_dir }}/keys/server_priv)" >> /etc/wireguard/{{ wg_vpn_dev }}.conf'
+    args:
+      executable: /bin/bash
+    environment:
+      PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    notify:
+      - restart_wg_quick_service
+  when: not wg_conf_file.stat.exists
+
+- name: Set net.ipv4.ip_forward=1
+  sysctl:
+      name: net.ipv4.ip_forward
+      value: "1"
+      state: present
+      sysctl_set: yes
+      reload: yes
+
+- name: Add ufw nat rules
+  blockinfile:
+    path: /etc/ufw/before.rules
+    insertbefore: '\*filter'
+    block: |
+      *nat
+      :POSTROUTING ACCEPT [0:0]
+      -I POSTROUTING -s {{ wg_network }} -o {{ pivpn_ipv4_dev }} -j MASQUERADE -m comment --comment wireguard-nat-rule
+      COMMIT
+  notify:
+    - ufw_reload
+
+### tuple ### allow udp 51820 0.0.0.0/0 any 0.0.0.0/0 in
+#-A ufw-user-input -p udp --dport 51820 -j ACCEPT
+- name: ufw allow traffic from the VPN port
+  ufw:
+    insert: 1
+    rule: allow
+    port: "{{ wg_listen_port }}"
+    proto: udp
+  notify:
+    - ufw_reload
+
+### tuple ### route:allow any any 0.0.0.0/0 any 10.6.0.0/24 in_wg0!out_eth0
+#-A ufw-user-forward -i wg0 -o eth0 -s 10.6.0.0/24 -j ACCEPT
+- name: ufw allow route from {{ wg_network }} on {{ wg_vpn_dev }} to anywhere
+  ufw:
+    insert: 1
+    route: yes
+    rule: allow
+    direction: in
+    interface: "{{ wg_vpn_dev }}"
+    from_ip: "{{ wg_network }}"
+    to_ip: any
+  notify:
+    - ufw_reload
+
+- name: Enable and start wg-quick@{{ wg_vpn_dev }} service
+  service:
+      name: "wg-quick@{{ wg_vpn_dev }}"
+      state: started
+      enabled: yes
+
+- name: Create clients
+  shell: "pivpn add -n {{ item }}"
+  args:
+    executable: /bin/bash
+    creates: "{{ wg_config_dir }}/configs/{{ item }}.conf"
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  loop:
+  - HomeVPN-FT
+  - HomeVPN-ST
+
+- name: Set AllowedIPs for /home/pi/configs/HomeVPN-ST.conf
+  lineinfile:
+    path: //home/pi/configs/HomeVPN-ST.conf
+    regexp: '^AllowedIPs'
+    line: "AllowedIPs = {{ pivpn_ipv4_network }}, {{ wg_network }}"

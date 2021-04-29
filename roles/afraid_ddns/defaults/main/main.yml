@@ -1,0 +1,3 @@
+---
+
+afraid_ddns_token: "{{ vault_afraid_ddns_token }}"

@@ -1,0 +1,19 @@
+---
+pivpn_git_url: "https://github.com/pivpn/pivpn.git"
+
+pivpn_ipv4_dev: "{{ ansible_default_ipv4.interface }}"
+pivpn_ipv4_address: "{{ ansible_default_ipv4.address }}"
+pivpn_ipv4_cidr_mask: 24
+pivpn_ipv4_network: 192.168.1.0/{{ pivpn_ipv4_cidr_mask }}
+pivpn_ipv4_gw: "{{ ansible_default_ipv4.gateway }}"
+
+wg_config_dir: "/etc/wireguard"
+wg_net_addr: 10.6.0.0
+wg_net_cidr_mask: 24
+wg_network: "{{wg_net_addr }}/{{ wg_net_cidr_mask }}"
+wg_address: "10.6.0.1/{{ wg_net_cidr_mask }}"
+wg_client_dns1: "{{ pivpn_ipv4_gw }}"
+wg_client_dns2: ""
+wg_ddns_hostname: "{{ vault_wg_ddns_hostname }}"
+wg_listen_port: "{{ vault_wg_listen_port }}"
+wg_vpn_dev: wg0

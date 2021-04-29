@@ -1,0 +1,11 @@
+---
+
+- name: ufw_reload
+  ufw:
+    state: reloaded
+
+- name: restart_wg_quick_service
+  service:
+    name: "wg-quick@{{ wg_vpn_dev }}"
+    enabled: yes
+    state: restarted

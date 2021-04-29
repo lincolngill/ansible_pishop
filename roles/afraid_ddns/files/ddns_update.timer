@@ -1,0 +1,17 @@
+[Unit]
+Description=Schedule to run ddns_update.sh every hour
+RefuseManualStart=no
+RefuseManualStop=no
+
+[Timer]
+# Execute job if it missed run dur to machine being off
+Persistent=true
+# Run 90 secs after boot
+OnBootSec=90
+# Run every hour
+OnUnitActiveSec=3600
+#OnUnitActiveSec=60
+Unit=ddns_update.service
+
+[Install]
+WantedBy=timers.target

@@ -1,5 +1,9 @@
-# pispy Deployment
-Ansible repo to install and setup Raspberry pi(s) as pispy security cameras.
+# pishop
+Ansible repo to install and setup Raspberry pi(s) on a Home LAN.
+
+Manages:
+* pispy security cameras.
+* pi VPN 
 
 ## Shortcut script for running ansible commands
 
@@ -36,6 +40,10 @@ $ ./doit.sh 1
 7) Check prepared image is working as expected. E.g:
 ```bash
 $ ./doit.sh 2 cam1pi.local
+```
+If this fails because known_hosts has an old entry for the ip or host, you can remove the offending entry with:
+```
+ssh-keygen -R <ipaddress|hostname>
 ```
 
 ## Setup pi as a camera

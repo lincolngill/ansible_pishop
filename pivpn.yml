@@ -1,0 +1,19 @@
+---
+#
+# Playbook setup Pi WireGuard VPN
+#
+- name: Pi WireGuard VPN setup
+  hosts: pivpn
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - import_role:
+        name: pi
+    - import_role:
+        name: pivpn
+      tags: vpn
+    - import_role:
+        name: afraid_ddns
+      tags: ddns
+      become: no

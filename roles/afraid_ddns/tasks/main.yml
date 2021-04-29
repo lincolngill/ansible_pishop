@@ -1,0 +1,45 @@
+---
+# systemd user service to Update the https://freedns.afraid.org DDNS entry
+
+- name: Create ddns_update and systemd directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+  loop:
+  - "/home/pi/ddns_update"
+  - "/home/pi/.config/systemd/user"
+
+- name: Create /home/pi/ddns_update/ddns_update.sh
+  template:
+    src: templates/ddns_update.sh.j2
+    dest: /home/pi/ddns_update/ddns_update.sh
+    mode:  '0755'
+
+- name: Create /home/pi/ddns_update/status.sh
+  copy:
+    src: files/status.sh
+    dest: /home/pi/ddns_update/status.sh
+    mode: '0755'
+
+- name: Create systemd ddns_update.service
+  copy:
+    src: files/ddns_update.service
+    dest: /home/pi/.config/systemd/user/ddns_update.service
+  notify: reload_ddns_update
+
+- name: Create systemd ddns_update.timer
+  copy:
+    src: files/ddns_update.timer
+    dest: /home/pi/.config/systemd/user/ddns_update.timer
+  notify: reload_ddns_update
+
+- name: Enable and start ddns_update.service and timer
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+    scope: user
+  loop:
+  - ddns_update.service
+  - ddns_update.timer

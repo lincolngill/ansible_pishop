@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+wget --no-check-certificate -O - https://freedns.afraid.org/dynamic/update.php?{{ afraid_ddns_token }} > "$(dirname $0)/ddns_update.log" 2>&1
+#date > "$(dirname $0)/ddns_update.log" 2>&1
+
+# systemctl --user status ddns_update
+# journalctl --user --unit ddns_update.service --boot
+# journalctl --user --unit ddns_update.timer --boot
