@@ -11,9 +11,14 @@
   loop:
   - HomeVPN-FT
   - HomeVPN-ST
+  - PhoneWG-FT
+  - PhoneWG-ST
 
 - name: Set AllowedIPs for /home/pi/configs/HomeVPN-ST.conf
   lineinfile:
-    path: //home/pi/configs/HomeVPN-ST.conf
+    path: "//home/pi/configs/{{ item }}.conf"
     regexp: '^AllowedIPs'
     line: "AllowedIPs = {{ pivpn_ipv4_network }}, {{ wg_network }}"
+  loop:
+  - "HomeVPN-ST"
+  - "PhoneWG-ST"
