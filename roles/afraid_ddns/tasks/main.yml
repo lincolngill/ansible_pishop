@@ -34,12 +34,17 @@
     dest: /home/pi/.config/systemd/user/ddns_update.timer
   notify: reload_ddns_update
 
-- name: Enable and start ddns_update.service and timer
+# Don't start the service. It will be stopped for most of the time becuase it's timer based. 
+# With state: started, this task would usually think it needs to be started and be marked as a change, when not really.
+- name: Enable ddns_update.service
   systemd:
-    name: "{{ item }}"
+    name: ddns_update.service
+    enabled: yes
+    scope: user
+
+- name: Enable and start ddns_update.timer
+  systemd:
+    name: ddns_update.timer
     enabled: yes
     state: started
     scope: user
-  loop:
-  - ddns_update.service
-  - ddns_update.timer

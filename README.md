@@ -68,3 +68,8 @@ $ ./doit.sh 3 cam1pi.local picameras configcamera
 E.g. 2 - Just install go
 $ ./doit.sh 3 cam1pi.local picameras godev
 ```
+
+Example string encryption
+```bash
+$ ansible-vault encrypt_string --vault-id gills@~/ansible-vpw 'secretsauce' --name 'ansible_become_password'
+```
