@@ -34,5 +34,6 @@ case $STEP in
     5) fn_run "ansible-galaxy init roles/newrole" ;;
     # List facts
     6) fn_run "ansible -i hosts -m setup --vault-id ${VAULT_ID} $LIMIT" ;;
+    10) fn_run "ansible-vault view --vault-id ${VAULT_ID} group_vars/pies/vault.yml" ;;
     *) echo "Usage: doit.sh [<step>] [<ansible_limit>]" >&2; exit 1 ;;
 esac

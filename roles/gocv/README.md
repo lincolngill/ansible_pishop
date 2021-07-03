@@ -4,8 +4,7 @@ Build OpenCV From make File Provided by gocv
 Tasks:
 * Installs `git` and `screen`
 * Gets the gocv module - Which includes the OpenCV make file
-* Runs a shell script in a detached screen to run the `make` steps (Takes a long time) 
-* Sets up a couple of gocv examples
+* Runs a shell script in a detached screen to run the `make` steps (Takes a long time)
 
 The `make` steps are run from a script that runs in a detached `screen` session on the target.
 The script takes a long time. You can leave it running and `ssh` to the target and reattached to the screen session to check on progress:
@@ -40,12 +39,13 @@ Role Variables
 
 | Variable                 | Required | Default                   | Comments                                            |
 |--------------------------|----------|---------------------------|-----------------------------------------------------|
-| gocv_ver                 | no       | v0.26.0                   | The expected version of gocv                        |
-| gocv_mod                 | no       | gocv.io/x/gocv            | The module name to `go get`                         |
-| gocv_gopath              | no       | /home/pi/go               | The GOPATH directory. Used to locate the make file. |
-| gocv_setup_egs           | no       | [version, mjpeg-streamer] | List of examples to copy from the module cache.     |
+|                          |          |                           |                                                     |
 
-The role will install the latest version of gocv. `gocv_ver` must match that version. It is used to navigate to the cached module directory to run the `make` steps.
+The role will install the latest version of gocv. It will also upgrade to the latest version if one is available. It's worth checking if new versions are available before running the role because the make step takes ~12hrs and will be overwriting version independent libraries as it runs.
+
+```bash
+go list -m -versions gocv.io/x/gocv
+```
 
 Dependencies
 ------------

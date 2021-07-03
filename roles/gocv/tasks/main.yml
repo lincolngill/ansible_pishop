@@ -7,14 +7,6 @@
     state: present
   become: yes
 
-- name: Get {{ gocv_mod }}
-  shell: "go get -u -d {{ gocv_mod }}"
-  args:
-    executable: /bin/bash
-    creates: "{{ gocv_mod_path }}"
-  environment:
-    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
-
 - name: Install screen
   apt:
     name: screen
@@ -22,48 +14,54 @@
   become: yes
 
 - name: Copy make_gocv.sh to /home/pi
-  template:
-    src: templates/make_gocv.sh.j2
+  copy:
+    src: files/make_gocv.sh
     dest: /home/pi/make_gocv.sh
     mode: '0755'
     owner: pi
     group: pi
 
-# Runs a detached screen in the background, to asynchonously build gocv.
-# Script only runs make steps that haven't completed sucessfully.
-- name: Run /home/pi/make_gocv.sh (Takes a long time. Runs as a detached screen)
-  shell: "/home/pi/make_gocv.sh"
+# Leaves a gocv_make.flag file if new module downloaded. So next task can detect the make steps need to run.
+- name: Check and download latest gocv module. Run/home/pi/make_gocv.sh -u
+  shell: "/home/pi/make_gocv.sh -u"
   args:
     executable: /bin/bash
-    creates: /usr/local/lib/libopencv_core.so
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
+  changed_when: false
+
+# Runs a detached screen in the background, to asynchonously build gocv.
+# Script only runs if the new module signal file exists.
+# Script runs only the make steps that haven't completed sucessfully.
+# Task will fail if rerun while a previous execution is still running. I.e. checks if the screen process exists. 
+- name: Run /home/pi/make_gocv.sh (Takes a long time. Runs as a detached screen)
+  shell: "/home/pi/make_gocv.sh -b"
+  args:
+    executable: /bin/bash
+    removes: "/home/pi/gocv_make.flag"
   environment:
     PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
 
-# The following steps may not work if the make_gocv is still running. Needs testing.
-- name: Create example directories
+- name: Create godev directories
   file:
-    path: "/home/pi/godev/{{ item }}"
+    path: "/home/pi/godev/version"
     mode: '0755'
     state: directory
-  loop: "{{ gocv_setup_egs }}"
 
-- name: Init example modules
-  shell: "(go mod init examples.com/{{ item }}) && (go get {{ gocv_mod }})"
-  args:
-    executable: /bin/bash
-    chdir: "/home/pi/godev/{{ item }}"
-    creates: "/home/pi/godev/{{ item }}/go.mod"
-  environment:
-    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
-  loop: "{{ gocv_setup_egs }}"
-
-- name: Copy examples to /home/pi/godev
+- name: Copy version.go example
   copy:
-    remote_src: yes
-    src: "{{ gocv_mod_path }}/cmd/{{ item }}/main.go"
-    dest: "/home/pi/godev/{{ item }}/"
-    mode: '0644'
+    src: files/version.go
+    dest: /home/pi/godev/version/main.go
+    mode: '0755'
     owner: pi
     group: pi
-    force: no # Only copy if the file doesn't already exist. So doesn't overwrite post copy modifications
-  loop: "{{ gocv_setup_egs }}"
+
+# Need to do a "go get gocv.io/x/gocv" to add to go.mod file but can't do this until the make steps are complete.
+- name: Init version modules
+  shell: "go mod init examples.com/version"
+  args:
+    executable: /bin/bash
+    chdir: "/home/pi/godev/version"
+    creates: "/home/pi/godev/version/go.mod"
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/go/bin"
