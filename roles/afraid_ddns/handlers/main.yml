@@ -1,0 +1,10 @@
+---
+
+- name: reload_ddns_update
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    scope: user
+  loop:
+  - ddns_update.service
+  - ddns_update.timer

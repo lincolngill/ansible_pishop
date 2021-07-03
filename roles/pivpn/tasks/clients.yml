@@ -1,0 +1,24 @@
+---
+# Create WireGuard clients
+
+- name: Create clients
+  shell: "pivpn add -n {{ item }}"
+  args:
+    executable: /bin/bash
+    creates: "{{ wg_config_dir }}/configs/{{ item }}.conf"
+  environment:
+    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  loop:
+  - HomeVPN-FT
+  - HomeVPN-ST
+  - PhoneWG-FT
+  - PhoneWG-ST
+
+- name: Set AllowedIPs for /home/pi/configs/HomeVPN-ST.conf
+  lineinfile:
+    path: "//home/pi/configs/{{ item }}.conf"
+    regexp: '^AllowedIPs'
+    line: "AllowedIPs = {{ pivpn_ipv4_network }}, {{ wg_network }}"
+  loop:
+  - "HomeVPN-ST"
+  - "PhoneWG-ST"

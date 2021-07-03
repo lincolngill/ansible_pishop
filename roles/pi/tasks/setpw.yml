@@ -11,3 +11,4 @@
   user:
     name: pi
     password: "{{ pi_password_hash }}"
+  when: ansible_become_password is undefined

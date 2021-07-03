@@ -1,0 +1,27 @@
+---
+# Setup firewall
+
+- name: Install ufw firewall
+  apt:
+    name: ufw
+    state: present
+
+- name: Set ufw logging on
+  ufw:
+    logging: "on"
+
+# More rules will be added by the  WireGuard tasks
+- name: ufw allow ssh
+  ufw:
+    rule: allow
+    name: OpenSSH
+
+- ufw:
+    rule: limit
+    port: ssh
+    proto: tcp
+
+- name: Enable ufw with deny as default policy
+  ufw:
+    state: enabled
+    policy: deny

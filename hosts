@@ -1,3 +1,9 @@
+[pivpn]
+vpnpi.local
+
+[octopi]
+octopi.local
+
 [picameras]
 cam1pi.local
 cam2pi.local
@@ -12,6 +18,8 @@ newpi
 
 [pies:children]
 picameras
+pivpn
+octopi
 
 [cameras:children]
 picameras

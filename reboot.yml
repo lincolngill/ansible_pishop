@@ -2,8 +2,8 @@
 #
 # Playbook to reboot the Pi security camera
 #
-- name: Pi security camera setup
-  hosts: picameras
+- name: Reboot servers
+  hosts: all
   gather_facts: no
   become: yes
 

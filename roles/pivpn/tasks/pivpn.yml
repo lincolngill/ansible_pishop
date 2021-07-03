@@ -1,0 +1,52 @@
+---
+# Install pivpn
+
+- name: Install git tar wget curl grep dnsutils whiptail net-tools bsdmainutils dhcpcd5
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - git
+    - tar
+    - wget
+    - curl
+    - grep
+    - dnsutils
+    - whiptail
+    - net-tools
+    - bsdmainutils
+    - dhcpcd5
+
+- name: Clone or update {{ pivpn_git_url }}
+  git:
+    repo: "{{ pivpn_git_url }}"
+    dest: "/usr/local/src/pivpn"
+    depth: 1
+
+- name: Create /etc/pivpn/wireguard directory
+  file:
+    path: /etc/pivpn/wireguard
+    owner: root
+    group: root
+    state: directory
+    mode: 0755
+
+- name: Create /etc/pivpn/wireguard/setupVars.conf
+  template:
+    src: templates/setupVars.conf.j2
+    dest: "/etc/pivpn/wireguard/setupVars.conf"
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Create pivpn installation symlinks
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    state: link
+  with_items:
+  - { src: '/usr/local/src/pivpn/scripts/wireguard/bash-completion', dest: '/etc/bash_completion.d/pivpn' }
+  - { src: '/usr/local/src/pivpn/scripts/wireguard/pivpn.sh', dest: '/usr/local/bin/pivpn' }
+  - { src: '/usr/local/src/pivpn/scripts/', dest: '/opt/pivpn' }
