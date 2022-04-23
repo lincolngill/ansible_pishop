@@ -114,7 +114,7 @@ CURMAKEDIR=$(fn_getmoddir)
 if [ -z "$CURMAKEDIR" ]; then
 	fn_log "Installing gocv.io/x/gocv module..."
 else
-	fn_log "Upgrading $CURMAKEDIR..."
+	fn_log "Updating $CURMAKEDIR..."
 fi
 # Just download
 go get -d -u "$GOCV_MOD"

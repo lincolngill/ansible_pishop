@@ -1,0 +1,5 @@
+---
+nextcloud_db_user_pw: "{{ vault_nextcloud_db_user_pw }}"
+
+nextcloud_zipfile: nextcloud-23.0.4.zip
+nextcloud_zipfile_md5: fe7b1dfc6ade7e820879788607282521

@@ -1,0 +1,19 @@
+---
+# Setup pi NextCloud
+# Based on: https://www.youtube.com/watch?v=2OsNGj2n2zc&t=1s
+#
+
+- import_tasks: ufw.yml
+  tags: ufw
+
+- import_tasks: apache2.yml
+  tags: apache2
+
+- import_tasks: php.yml
+  tags: php
+
+- import_tasks: db.yml
+  tags: db
+
+- import_tasks: nextcloud.yml
+  tags: nextcloud

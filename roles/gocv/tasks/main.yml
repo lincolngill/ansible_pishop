@@ -52,7 +52,7 @@
   copy:
     src: files/version.go
     dest: /home/pi/godev/version/main.go
-    mode: '0755'
+    mode: '0644'
     owner: pi
     group: pi
 

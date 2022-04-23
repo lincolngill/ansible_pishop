@@ -1,0 +1,42 @@
+---
+
+- name: Download {{ nextcloud_zipfile}}
+  get_url:
+    url: "https://download.nextcloud.com/server/releases/{{ nextcloud_zipfile }}"
+    checksum: "md5:{{ nextcloud_zipfile_md5 }}"
+    dest: "/var/www/{{ nextcloud_zipfile }}"
+    force: no
+
+- name: Extract {{ nextcloud_zipfile }}
+  unarchive:
+    src: "/var/www/{{ nextcloud_zipfile }}"
+    dest: /var/www
+    owner: www-data
+    group: www-data
+    remote_src: yes
+    creates: /var/www/nextcloud
+
+- name: a2dissite 000-default.conf
+  command: a2dissite 000-default.conf
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+  notify:
+  - restart apache2
+
+- name: Setup nextcloud.conf site
+  copy:
+    src: files/nextcloud.conf
+    dest: /etc/apache2/sites-available/nextcloud.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: a2ensite nextcloud.conf
+  command: a2ensite nextcloud.conf
+  args:
+    creates: /etc/apache2/sites-enabled/nextcloud.conf
+  notify:
+  - restart apache2
+
+
+- debug: msg="Run nextcloud_postconfig playbook after doing the initial browsers nextcloud setup"

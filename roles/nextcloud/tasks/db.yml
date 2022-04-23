@@ -1,0 +1,49 @@
+---
+# Create nextcloud database
+
+- name: Install mariadb-server packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - mariadb-server
+    - pip
+
+- name: Enable and start MariaDB service
+  service:
+    name: mariadb
+    enabled: yes
+    state: started
+
+- name: Pip install PyMySQL
+  pip:
+    name: pymysql
+    state: present
+
+- name: Create nextcloud DB
+  mysql_db:
+    name: nextcloud
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create nextcloud DB user
+  mysql_user:
+    name: nextcloud
+    password: "{{ nextcloud_db_user_pw }}"
+    priv: 'nextcloud.*:ALL'
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Remove anonymous user
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Remove test DB
+  mysql_db:
+    name: test
+    state: absent
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    

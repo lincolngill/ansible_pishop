@@ -1,3 +1,6 @@
+[nextcloud]
+nextcloud.local
+
 [pivpn]
 vpnpi.local
 
@@ -20,6 +23,7 @@ newpi
 picameras
 pivpn
 octopi
+nextcloud
 
 [cameras:children]
 picameras

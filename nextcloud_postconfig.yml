@@ -1,0 +1,37 @@
+---
+#
+# Playbook setup Pi nextcloud
+#
+- name: Pi NextCloud setup
+  hosts: nextcloud
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Set config.php file owner and permissions
+      file:
+        name: /var/www/nextcloud/config/config.php
+        owner: root
+        group: www-data
+        mode: 0660
+      notify: restart apache2
+
+    - name: Update config.php with memcache
+      lineinfile:
+        path: /var/www/nextcloud/config/config.php
+        insertbefore: '^\);'
+        line: "  'memcache.local' => '\\OC\\Memcache\\APCu',"
+      notify: restart apache2
+
+    - name: Update config.php with phone region
+      lineinfile:
+        path: /var/www/nextcloud/config/config.php
+        insertbefore: "memcache.local"
+        line: "  'default_phone_region' => 'NZ',"
+      notify: restart apache2
+
+  handlers:
+    - name: restart apache2
+      service:
+        name: apache2
+        state: restarted

@@ -13,6 +13,12 @@
     dest: "{{ newpi_bootdir }}/ssh"
   delegate_to: localhost
 
+- name: Create {{ newpi_bootdir }}/userconf.txt to avoid startup config
+  copy:
+    content: "pi:raspberry"
+    dest: "{{ newpi_bootdir }}/userconf.txt"
+  delegate_to: localhost
+
 - name: Update {{ newpi_rootfsdir }}/etc/hosts 127.0.1.1 to {{ inventory_hostname_short }}
   lineinfile:
     path: "{{ newpi_rootfsdir }}/etc/hosts"

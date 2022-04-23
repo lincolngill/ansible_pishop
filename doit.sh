@@ -4,7 +4,7 @@
 #
 STEP=${1:-1}
 LIMIT="${2}"
-PLAY="${3:-pivpn}"
+PLAY="${3:-nextcloud}"
 TAGS="${4}"
 AOPT=""
 if [ -n "$LIMIT" ]; then
@@ -37,6 +37,7 @@ case $STEP in
     10) fn_run "ansible-vault view --vault-id ${VAULT_ID} group_vars/pies/vault.yml" ;;
     11) fn_run "ansible-vault edit --vault-id ${VAULT_ID} roles/pivpn/defaults/main/vault.yml" ;;
     12) fn_run "ansible-vault edit --vault-id ${VAULT_ID} roles/afraid_ddns/defaults/main/vault.yml" ;;
+    13) fn_run "ansible-vault edit --vault-id ${VAULT_ID} roles/nextcloud/defaults/main/vault.yml" ;;
     100) fn_run "ansible-playbook pivpn.yml -i hosts ${AOPT} --vault-id ${VAULT_ID}" ;;
     101) fn_run "ansible-playbook octopi.yml -i hosts ${AOPT} --vault-id ${VAULT_ID}" ;;
     *) echo "Usage: doit.sh [<step>] [<ansible_limit>]" >&2; exit 1 ;;

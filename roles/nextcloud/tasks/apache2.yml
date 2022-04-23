@@ -1,0 +1,35 @@
+---
+# Setup Apache2
+
+- name: Install Apache2
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apache2
+    - libapache2-mod-php7.4
+
+- name: ufw allow web server WWW Full
+  ufw:
+    rule: allow
+    name: "WWW Full"
+
+- name: Enable and start Apache2 service
+  service:
+    name: apache2
+    enabled: yes
+    state: started
+
+- name: Enable Apache2 modules
+  apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - dir
+    - env
+    - headers
+    - mime
+    - rewrite
+    - ssl
+  notify:
+  - restart apache2
