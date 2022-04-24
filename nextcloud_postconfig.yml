@@ -19,14 +19,14 @@
     - name: Update config.php with memcache
       lineinfile:
         path: /var/www/nextcloud/config/config.php
-        insertbefore: '^\);'
+        insertafter: 'installed'
         line: "  'memcache.local' => '\\OC\\Memcache\\APCu',"
       notify: restart apache2
 
     - name: Update config.php with phone region
       lineinfile:
         path: /var/www/nextcloud/config/config.php
-        insertbefore: "memcache.local"
+        insertafter: "memcache.local"
         line: "  'default_phone_region' => 'NZ',"
       notify: restart apache2
 
