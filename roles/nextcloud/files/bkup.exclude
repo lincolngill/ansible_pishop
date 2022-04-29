@@ -1,0 +1,4 @@
+lost+found/
+*.part
+nextcloud.log
+files_trashbin/

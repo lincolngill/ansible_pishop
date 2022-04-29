@@ -6,23 +6,23 @@
     name: "{{ item }}"
     state: present
   loop:
-    - php7.4-gd
-    - php7.4-mysql
-    - php7.4-curl
-    - php7.4-mbstring
-    - php7.4-intl
-    - php7.4-gmp
-    - php7.4-bcmath
-    - php-imagick
-    - php7.4-xml
-    - php7.4-zip
-    - php7.4-apcu
+    - "php{{ php_version }}-gd"
+    - "php{{ php_version }}-mysql"
+    - "php{{ php_version }}-curl"
+    - "php{{ php_version }}-mbstring"
+    - "php{{ php_version }}-intl"
+    - "php{{ php_version }}-gmp"
+    - "php{{ php_version }}-bcmath"
+    - "php{{ php_version }}-imagick"
+    - "php{{ php_version }}-xml"
+    - "php{{ php_version }}-zip"
+    - "php{{ php_version }}-apcu"
     - libmagickcore-6.q16-6-extra
 
-- name: Enable PHP 7.4 modules
+- name: Enable PHP {{ php_version }} modules
   command: phpenmod "{{ item }}"
   args:
-    creates: "/etc/php/7.4/cli/conf.d/20-{{ item }}.ini"
+    creates: "/etc/php/{{ php_version }}/cli/conf.d/20-{{ item }}.ini"
   loop:
     - bcmath
     - gmp
@@ -31,7 +31,7 @@
 
 - name: Set php_ini_path variable
   set_fact:
-    php_ini_path: /etc/php/7.4/apache2/php.ini
+    php_ini_path: "/etc/php/{{ php_version }}/apache2/php.ini"
 
 - name: Set PHP ini values
   ini_file:
@@ -43,9 +43,9 @@
   vars:
     ini_data:
       memory_limit: 512M
-      upload_max_filesize: 200M
+      upload_max_filesize: 20G
       max_execution_time: 360
-      post_max_size: 200M
+      post_max_size: 20G
       date.timezone: Pacific/Auckland
       opcache.enable: 1
       opcache.interned_strings_buffer: 16

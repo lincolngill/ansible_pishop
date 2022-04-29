@@ -1,0 +1,15 @@
+---
+# Mount /dev/sda1
+
+- name: Mount /mnt/nc1
+  mount:
+    path: /mnt/nc1
+    src: UUID=4d44fd19-58b1-463b-8491-c6097140ebea
+    fstype: ext4
+    state: mounted
+
+- name: Add pi to www-data group
+  user:
+    name: pi
+    groups: www-data
+    append: yes

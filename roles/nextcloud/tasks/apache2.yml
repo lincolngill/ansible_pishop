@@ -7,7 +7,7 @@
     state: present
   loop:
     - apache2
-    - libapache2-mod-php7.4
+    - "libapache2-mod-php{{ php_version }}"
 
 - name: ufw allow web server WWW Full
   ufw:

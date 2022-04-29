@@ -1,0 +1,37 @@
+---
+# Setup backup to onedrive
+
+- name: Create bkup dir
+  file:
+    name: "{{ item }}"
+    state: directory
+    owner: pi
+    group: pi
+    mode: 0755
+  loop:
+    - /home/pi/bkup
+    - /home/pi/bkup/logs
+
+- name: Install bkup.sh script
+  copy:
+    src: files/bkup.sh
+    dest: /home/pi/bkup/bkup.sh
+    owner: pi
+    group: pi
+    mode: 0766
+
+- name: Install bkup.exclude
+  copy:
+    src: files/bkup.exclude
+    dest: /home/pi/bkup/bkup.exclude
+    owner: pi
+    group: pi
+    mode: 0644
+
+- name: Setup bkup cron job
+  cron:
+    name: "backup nextcloud"
+    minute: "5"
+    hour: "1"
+    job: "/home/pi/bkup/bkup.sh -b > /dev/null"
+    user: pi

@@ -8,13 +8,14 @@
   become: yes
 
   tasks:
-    - name: Set config.php file owner and permissions
-      file:
-        name: /var/www/nextcloud/config/config.php
-        owner: root
-        group: www-data
-        mode: 0660
-      notify: restart apache2
+ # Cannot run command line occ is the file is owned by root.
+ #   - name: Set config.php file owner and permissions
+ #     file:
+ #       name: /var/www/nextcloud/config/config.php
+ #       owner: root
+ #       group: www-data
+ #       mode: 0660
+ #     notify: restart apache2
 
     - name: Update config.php with memcache
       lineinfile:
