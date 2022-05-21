@@ -1,31 +1,31 @@
 ---
 # Setup backup to onedrive
 
-- name: Create bkup dir
+- name: Create /var/log/ncbkup dir
   file:
     name: "{{ item }}"
     state: directory
-    owner: pi
-    group: pi
+    owner: www-data
+    group: www-data
     mode: 0755
   loop:
-    - /home/pi/bkup
-    - /home/pi/bkup/logs
+    - /var/log/ncbkup
+    - /var/log/ncbkup/logs
 
-- name: Install bkup.sh script
+- name: Install /usr/local/bin/ncbkup script
   copy:
-    src: files/bkup.sh
-    dest: /home/pi/bkup/bkup.sh
-    owner: pi
-    group: pi
+    src: files/ncbkup.sh
+    dest: /usr/local/bin/ncbkup
+    owner: www-data
+    group: www-data
     mode: 0766
 
-- name: Install bkup.exclude
+- name: Install /etc/ncbkup.exclude
   copy:
-    src: files/bkup.exclude
-    dest: /home/pi/bkup/bkup.exclude
-    owner: pi
-    group: pi
+    src: files/ncbkup.exclude
+    dest: /etc/ncbkup.exclude
+    owner: www-data
+    group: www-data
     mode: 0644
 
 - name: Setup bkup cron job
@@ -33,5 +33,6 @@
     name: "backup nextcloud"
     minute: "5"
     hour: "1"
-    job: "/home/pi/bkup/bkup.sh -b > /dev/null"
-    user: pi
+    job: "/usr/local/bin/ncbkup -b > /dev/null"
+    user: www-data
+    disabled: yes

@@ -4,7 +4,7 @@
 - name: Mount /mnt/nc1
   mount:
     path: /mnt/nc1
-    src: UUID=4d44fd19-58b1-463b-8491-c6097140ebea
+    src: UUID=09c318d5-b23a-4ec0-8327-6d6296fae7a0
     fstype: ext4
     state: mounted
 

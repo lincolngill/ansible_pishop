@@ -41,21 +41,21 @@
     path: /home/pi/.config
     state: directory
     owner: pi
-    group: pi
-    mode: 0700
+    group: www-data
+    mode: 0750
 
 - name: Create /home/pi/.config/rclone
   file:
     path: /home/pi/.config/rclone
     state: directory
     owner: pi
-    group: pi
-    mode: 0766
+    group: www-data
+    mode: 0750
 
 - name: Create rclone config
   template:
     src: templates/rclone.conf.j2
     dest: /home/pi/.config/rclone/rclone.conf
     owner: pi
-    group: pi
-    mode: 0600
+    group: www-data
+    mode: 0650
