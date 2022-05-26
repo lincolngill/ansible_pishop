@@ -17,3 +17,5 @@ wg_client_dns2: ""
 wg_ddns_hostname: "{{ vault_wg_ddns_hostname }}"
 wg_listen_port: "{{ vault_wg_listen_port }}"
 wg_vpn_dev: wg0
+
+rclone_config: "{{ vault_rclone_config }}"

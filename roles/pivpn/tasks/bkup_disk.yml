@@ -1,0 +1,23 @@
+---
+# Mount /dev/sda1 as bkup disk
+
+- name: Install exFatProgs
+  apt:
+    name: exfatprogs
+    state: present
+
+- name: Mount /mnt/t7
+  mount:
+    path: /mnt/t7
+    src: UUID=7AAB-F92F
+    fstype: exfat
+    opts: defaults,auto,umask=000,users,rw,uid=pi,gid=pi
+    state: mounted
+
+- name: Create /mnt/t7/onedrv_bkup
+  file:
+    path: /mnt/t7/onedrv_bkup
+    state: directory
+    owner: pi
+    group: pi
+    mode: 0750

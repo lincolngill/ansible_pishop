@@ -1,0 +1,38 @@
+---
+# Setup onedrive bkup
+
+- name: Create /home/pi/odbkup dir
+  file:
+    name: "{{ item }}"
+    state: directory
+    owner: pi
+    group: pi
+    mode: 0755
+  loop:
+    - /home/pi/odbkup
+    - /home/pi/odbkup/logs
+
+- name: Install /home/pi/odbkup/odbkup.sh script
+  copy:
+    src: files/odbkup.sh
+    dest: /home/pi/odbkup/odbkup.sh
+    owner: pi
+    group: pi
+    mode: 0766
+
+- name: Install /home/pi/odbkup/odbkup.exclude
+  copy:
+    src: files/odbkup.exclude
+    dest: /home/pi/odbkup/odbkup.exclude
+    owner: pi
+    group: pi
+    mode: 0644
+
+- name: Setup bkup cron job
+  cron:
+    name: "backup onedrive"
+    minute: "5"
+    hour: "1"
+    job: "/home/pi/odbkup/odbkup.sh -b > /dev/null"
+    user: pi
+#    disabled: yes

@@ -4,7 +4,7 @@
 #
 STEP=${1:-1}
 LIMIT="${2}"
-PLAY="${3:-nextcloud}"
+PLAY="${3:-pivpn}"
 TAGS="${4}"
 AOPT=""
 if [ -n "$LIMIT" ]; then

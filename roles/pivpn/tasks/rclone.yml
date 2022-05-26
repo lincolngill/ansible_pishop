@@ -1,0 +1,61 @@
+---
+# Install rclone
+
+- name: Check if rclone installed
+  stat: 
+    path: /usr/bin/rclone
+  register: rclone_binary
+
+- name: rclone version
+  block:
+
+  - name: Get rclone version 
+    shell: "rclone --version"
+    register: current_rclone
+    changed_when: False
+
+  - name: set current_rclone_ver fact
+    set_fact:
+      current_rclone_ver: "{{ current_rclone.stdout_lines[0] | replace('rclone ','') }}"
+  
+  when: rclone_binary.stat.exists == True
+
+- name: Check for latest rclone version
+  uri:
+    url: https://downloads.rclone.org/version.txt
+    return_content: yes
+  register: rclone_latest
+
+- name: set latest_rclone_ver facts
+  set_fact:
+    latest_rclone_ver: "{{ rclone_latest.content | replace('\n','') | replace('rclone ','') }}"
+
+- debug: msg="rclone current {{ current_rclone_ver | default("NotInstalled") }} latest {{ latest_rclone_ver }}"
+
+- name: Install rclone
+  shell: 'curl https://rclone.org/install.sh | bash'
+  when: rclone_binary.stat.exists == False or latest_rclone_ver is version(current_rclone_ver, '>')
+
+- name: Create /home/pi/.config
+  file:
+    path: /home/pi/.config
+    state: directory
+    owner: pi
+    group: pi
+    mode: 0750
+
+- name: Create /home/pi/.config/rclone
+  file:
+    path: /home/pi/.config/rclone
+    state: directory
+    owner: pi
+    group: pi
+    mode: 0750
+
+- name: Create rclone config
+  template:
+    src: templates/rclone.conf.j2
+    dest: /home/pi/.config/rclone/rclone.conf
+    owner: pi
+    group: pi
+    mode: 0650

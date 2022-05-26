@@ -17,3 +17,12 @@
 
 - import_tasks: unattended_upgrades.yml
   tags: unattended
+
+- import_tasks: bkup_disk.yml
+  tags: bkup_disk
+
+- import_tasks: rclone.yml
+  tags: rclone
+
+- import_tasks: bkup.yml
+  tags: bkup
