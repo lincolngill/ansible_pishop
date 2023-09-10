@@ -9,7 +9,7 @@
 - name: Mount /mnt/t7
   mount:
     path: /mnt/t7
-    src: UUID=7AAB-F92F
+    src: UUID=365A-9B5D
     fstype: exfat
     opts: defaults,auto,umask=000,users,rw,uid=pi,gid=pi
     state: mounted

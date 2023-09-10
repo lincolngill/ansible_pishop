@@ -13,7 +13,10 @@
   - HomeVPN-ST
   - PhoneWG-FT
   - PhoneWG-ST
+  - TabS9WG-FT
+  - TabS9WG-ST
 
+# ST = Split tunnel. Route traffic to wg for selected (AllowedIPs) addresses.
 - name: Set AllowedIPs for /home/pi/configs/HomeVPN-ST.conf
   lineinfile:
     path: "//home/pi/configs/{{ item }}.conf"
@@ -22,3 +25,4 @@
   loop:
   - "HomeVPN-ST"
   - "PhoneWG-ST"
+  - "TabS9WG-ST"
