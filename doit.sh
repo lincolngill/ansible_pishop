@@ -19,7 +19,8 @@ VAULT_ID="gills@~/ansible-vpw"
 cd $(dirname $0)
 
 fn_run () {
-    set -x; $1; set +x
+    set -x; $1
+    { set +x; } 2>/dev/null
 }
 
 case $STEP in

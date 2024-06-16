@@ -1,14 +1,14 @@
 ---
 # Install WireGuard
 
-- name: Install raspberrypi-kernel-headers wireguard-tools wireguard-dkms qrencode
+- name: Install wg required packages
   apt:
     name: "{{ item }}"
     state: present
   loop:
-    - raspberrypi-kernel-headers
+#    - raspberrypi-kernel-headers
     - wireguard-tools
-    - wireguard-dkms
+#    - wireguard-dkms
     - qrencode
 
 - name: mkdir pivpn directories

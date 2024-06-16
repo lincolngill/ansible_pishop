@@ -1,7 +1,7 @@
 ---
 # Install pivpn
 
-- name: Install git tar wget curl grep dnsutils whiptail net-tools bsdmainutils dhcpcd5
+- name: Install pivpn required packages
   apt:
     name: "{{ item }}"
     state: present
@@ -12,10 +12,12 @@
     - curl
     - grep
     - dnsutils
+    - grepcidr
     - whiptail
     - net-tools
     - bsdmainutils
-    - dhcpcd5
+    - bash-completion
+ #   - dhcpcd5
 
 - name: Clone or update {{ pivpn_git_url }}
   git:

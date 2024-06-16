@@ -2,48 +2,48 @@
 # systemd user service to Update the https://freedns.afraid.org DDNS entry
 
 - name: Create ddns_update and systemd directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     recurse: yes
   loop:
-  - "/home/pi/ddns_update"
-  - "/home/pi/.config/systemd/user"
+  - "/home/{{ ansible_user }}/ddns_update"
+  - "/home/{{ ansible_user }}/.config/systemd/user"
 
-- name: Create /home/pi/ddns_update/ddns_update.sh
-  template:
+- name: Create /home/{{ ansible_user }}/ddns_update/ddns_update.sh
+  ansible.builtin.template:
     src: templates/ddns_update.sh.j2
-    dest: /home/pi/ddns_update/ddns_update.sh
+    dest: /home/{{ ansible_user }}/ddns_update/ddns_update.sh
     mode:  '0755'
 
-- name: Create /home/pi/ddns_update/status.sh
-  copy:
+- name: Create /home/{{ ansible_user }}/ddns_update/status.sh
+  ansible.builtin.copy:
     src: files/status.sh
-    dest: /home/pi/ddns_update/status.sh
+    dest: /home/{{ ansible_user }}/ddns_update/status.sh
     mode: '0755'
 
 - name: Create systemd ddns_update.service
-  copy:
-    src: files/ddns_update.service
-    dest: /home/pi/.config/systemd/user/ddns_update.service
+  ansible.builtin.template:
+    src: templates/ddns_update.service.j2
+    dest: /home/{{ ansible_user }}/.config/systemd/user/ddns_update.service
   notify: reload_ddns_update
 
 - name: Create systemd ddns_update.timer
-  copy:
+  ansible.builtin.copy:
     src: files/ddns_update.timer
-    dest: /home/pi/.config/systemd/user/ddns_update.timer
+    dest: /home/{{ ansible_user }}/.config/systemd/user/ddns_update.timer
   notify: reload_ddns_update
 
 # Don't start the service. It will be stopped for most of the time becuase it's timer based. 
 # With state: started, this task would usually think it needs to be started and be marked as a change, when not really.
 - name: Enable ddns_update.service
-  systemd:
+  ansible.builtin.systemd:
     name: ddns_update.service
     enabled: yes
     scope: user
 
 - name: Enable and start ddns_update.timer
-  systemd:
+  ansible.builtin.systemd:
     name: ddns_update.timer
     enabled: yes
     state: started

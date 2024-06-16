@@ -1,17 +1,21 @@
 ---
 # Disable Wifi and/or Bluetooth wireless
 
+- name: Check if /boot/firmware/config.txt exists
+  stat:
+    path: /boot/firmware/config.txt
+  register: new_config_txt
+
 - name: Disable wireless
   block:
-  - name: Insert disable wireless comment
+  - name: Insert disable wireless comment into {{ configfile }}
     lineinfile:
-      path: /boot/config.txt
+      path: "{{ configfile }}"
       line: "{{ comment_line }}"
       state: present
-
-  - name: Disable wireless radio
+  - name: Disable wifi radio via {{ configfile }}
     lineinfile:
-      path: /boot/config.txt
+      path: "{{ configfile }}"
       line: "dtoverlay=disable-{{ item }}"
       insertafter: "{{ comment_line }}"
       state: present
@@ -23,4 +27,5 @@
       - Reboot
   vars:
     comment_line: "# LG - Ansible Disable wireless"
+    configfile: "{{ '/boot/firmware/config.txt' if new_config_txt.stat.exists else '/boot/config.txt' }}"
   when: pi_disable_wireless == True

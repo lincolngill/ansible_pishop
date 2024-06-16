@@ -6,15 +6,17 @@
     name: unattended-upgrades
     state: present
 
+### Not required for Pi OS bookworm
+#
 # unattended-upgrades installs the Debian based file. pivpn has the corrected file.
-- name: Copy /usr/local/src/pivpn/files/etc/apt/apt.conf.d/50unattended-upgrades.Raspbian to /etc/apt/apt.conf.d/
-  copy:
-    remote_src: yes
-    src: /usr/local/src/pivpn/files/etc/apt/apt.conf.d/50unattended-upgrades.Raspbian
-    dest: /etc/apt/apt.conf.d/50unattended-upgrades
-    mode: 0644
-    owner: root
-    group: root
+#- name: Copy /usr/local/src/pivpn/files/etc/apt/apt.conf.d/50unattended-upgrades.Raspbian to /etc/apt/apt.conf.d/
+#  copy:
+#    remote_src: yes
+#    src: /usr/local/src/pivpn/files/etc/apt/apt.conf.d/50unattended-upgrades.Raspbian
+#    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+#    mode: 0644
+#    owner: root
+#    group: root
 
 - name: Create /etc/apt/apt.conf.d/02periodic file
   copy:

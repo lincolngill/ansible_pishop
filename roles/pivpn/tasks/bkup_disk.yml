@@ -11,13 +11,13 @@
     path: /mnt/t7
     src: UUID=365A-9B5D
     fstype: exfat
-    opts: defaults,auto,umask=000,users,rw,uid=pi,gid=pi
+    opts: "defaults,auto,umask=000,users,rw,uid={{ ansible_user }},gid={{ ansible_user }}"
     state: mounted
 
 - name: Create /mnt/t7/onedrv_bkup
   file:
     path: /mnt/t7/onedrv_bkup
     state: directory
-    owner: pi
-    group: pi
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0750

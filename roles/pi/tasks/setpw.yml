@@ -1,14 +1,14 @@
 ---
 # Secure the pi account with a strong password
 #
-- name: Pi user password info
+- name: "{{ ansible_user }} user password info"
   debug:
     msg:
     - "Password Hash: {{ pi_password_hash }}"
     verbosity: 1
 
-- name: Set pi password
+- name: Set {{ ansible_user }} password
   user:
-    name: pi
+    name: "{{ ansible_user }}"
     password: "{{ pi_password_hash }}"
   when: ansible_become_password is undefined

@@ -1,7 +1,17 @@
 ---
 # Install packages
 
-- name: Install vim
+- name: Install basic software
   package:
-    name: vim
+    name: "{{ item }}"
+    state: present
+  loop:
+    - vim
+    - neofetch
+
+- name: Add neofetch to .bashrc
+  ansible.builtin.lineinfile:
+    path: .bashrc
+    line: neofetch
+    insertafter: EOF
     state: present

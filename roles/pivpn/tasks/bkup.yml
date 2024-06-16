@@ -1,31 +1,31 @@
 ---
 # Setup onedrive bkup
 
-- name: Create /home/pi/odbkup dir
+- name: Create /home/{{ ansible_user }}/odbkup dir
   file:
     name: "{{ item }}"
     state: directory
-    owner: pi
-    group: pi
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0755
   loop:
-    - /home/pi/odbkup
-    - /home/pi/odbkup/logs
+    - /home/{{ ansible_user }}/odbkup
+    - /home/{{ ansible_user }}/odbkup/logs
 
-- name: Install /home/pi/odbkup/odbkup.sh script
+- name: Install /home/{{ ansible_user }}/odbkup/odbkup.sh script
   copy:
     src: files/odbkup.sh
-    dest: /home/pi/odbkup/odbkup.sh
-    owner: pi
-    group: pi
+    dest: /home/{{ ansible_user }}/odbkup/odbkup.sh
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0766
 
-- name: Install /home/pi/odbkup/odbkup.exclude
+- name: Install /home/{{ ansible_user }}/odbkup/odbkup.exclude
   copy:
     src: files/odbkup.exclude
-    dest: /home/pi/odbkup/odbkup.exclude
-    owner: pi
-    group: pi
+    dest: /home/{{ ansible_user }}/odbkup/odbkup.exclude
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0644
 
 - name: Setup bkup cron job
@@ -33,6 +33,6 @@
     name: "backup onedrive"
     minute: "5"
     hour: "1"
-    job: "/home/pi/odbkup/odbkup.sh -b > /dev/null"
-    user: pi
+    job: "/home/{{ ansible_user }}/odbkup/odbkup.sh -b > /dev/null"
+    user: "{{ ansible_user }}"
 #    disabled: yes

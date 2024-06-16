@@ -17,9 +17,9 @@
   - TabS9WG-ST
 
 # ST = Split tunnel. Route traffic to wg for selected (AllowedIPs) addresses.
-- name: Set AllowedIPs for /home/pi/configs/HomeVPN-ST.conf
+- name: Set AllowedIPs for /home/{{ ansible_user }}/configs/HomeVPN-ST.conf
   lineinfile:
-    path: "//home/pi/configs/{{ item }}.conf"
+    path: "//home/{{ ansible_user }}/configs/{{ item }}.conf"
     regexp: '^AllowedIPs'
     line: "AllowedIPs = {{ pivpn_ipv4_network }}, {{ wg_network }}"
   loop:

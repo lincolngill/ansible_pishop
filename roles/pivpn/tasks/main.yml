@@ -24,5 +24,8 @@
 - import_tasks: rclone.yml
   tags: rclone
 
+- import_tasks: mutt.yml
+  tags: mutt
+
 - import_tasks: bkup.yml
   tags: bkup

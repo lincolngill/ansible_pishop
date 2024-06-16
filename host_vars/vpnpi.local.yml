@@ -2,3 +2,5 @@
 #ansible_host: 192.168.1.61
 ansible_host: 192.168.1.85
 pi_disable_wireless: True
+
+ansible_user: links

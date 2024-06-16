@@ -3,7 +3,7 @@ Description=Job to update DDNS entry
 
 [Service]
 Type=simple
-ExecStart=/home/pi/ddns_update/ddns_update.sh
+ExecStart=/home/{{ ansible_user }}/ddns_update/ddns_update.sh
 
 [Install]
 WantedBy=default.target

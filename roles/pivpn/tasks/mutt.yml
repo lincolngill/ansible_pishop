@@ -1,0 +1,23 @@
+---
+# mutt mail reader and sender
+
+- name: Install mutt package
+  ansible.builtin.apt:
+    name: mutt
+    state: present
+
+- name: Create /home/{{ ansible_user }}/.mutt directory
+  file:
+    path: /home/{{ ansible_user }}/.mutt
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    state: directory
+    mode: 0755
+
+- name: Setup muttrc
+  ansible.builtin.template:
+    src: templates/muttrc.j2
+    dest: "/home/{{ ansible_user }}/.mutt/muttrc"
+    mode: 0644
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

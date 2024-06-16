@@ -36,26 +36,26 @@
   shell: 'curl https://rclone.org/install.sh | bash'
   when: rclone_binary.stat.exists == False or latest_rclone_ver is version(current_rclone_ver, '>')
 
-- name: Create /home/pi/.config
+- name: Create /home/{{ ansible_user }}/.config
   file:
-    path: /home/pi/.config
+    path: /home/{{ ansible_user }}/.config
     state: directory
-    owner: pi
-    group: pi
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0750
 
-- name: Create /home/pi/.config/rclone
+- name: Create /home/{{ ansible_user }}/.config/rclone
   file:
-    path: /home/pi/.config/rclone
+    path: /home/{{ ansible_user }}/.config/rclone
     state: directory
-    owner: pi
-    group: pi
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0750
 
 - name: Create rclone config
   template:
     src: templates/rclone.conf.j2
-    dest: /home/pi/.config/rclone/rclone.conf
-    owner: pi
-    group: pi
+    dest: /home/{{ ansible_user }}/.config/rclone/rclone.conf
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: 0650
