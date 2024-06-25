@@ -1,0 +1,21 @@
+---
+# minidlna setup
+
+- name: Install minidlna
+  ansible.builtin.apt:
+    name: minidlna
+    state: present
+
+- name: minidlna config
+  ansible.builtin.copy:
+    src: files/minidlna.conf
+    dest: /etc/minidlna.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: Restart minidlna
+
+- name: Ensure minidlna is running
+  ansible.builtin.service:
+    name: minidlna
+    state: started

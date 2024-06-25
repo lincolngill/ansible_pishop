@@ -29,3 +29,9 @@
 
 - import_tasks: bkup.yml
   tags: bkup
+
+- import_tasks: ssh_keys.yml
+  tags: sshkeys
+
+- import_tasks: minidlna.yml
+  tags: minidlna

@@ -23,3 +23,5 @@ rclone_config: "{{ vault_rclone_config }}"
 mutt_email: "{{ vault_mutt_email }}"
 mutt_email_pw: "{{ vault_mutt_email_pw }}"
 mutt_email_name: "{{ vault_mutt_email_name }}"
+
+authorized_keys: "{{ vault_authorized_keys }}"

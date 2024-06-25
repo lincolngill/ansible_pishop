@@ -9,3 +9,9 @@
     name: "wg-quick@{{ wg_vpn_dev }}"
     enabled: yes
     state: restarted
+
+- name: Restart minidlna
+  ansible.builtin.service:
+    name: minidlna
+    enabled: yes
+    state: restarted

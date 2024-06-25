@@ -64,7 +64,7 @@ if [ ! -d /mnt/t7/onedrv_bkup ]; then
 fi
 
 set $X
-rclone sync onedrive: /mnt/t7/onedrv_bkup $COPTS --exclude-from "$EXCFILE" --retries 1 --log-file "$LOGFILE" --log-level INFO $DRYRUN
+rclone sync onedrive: /mnt/t7/onedrv_bkup $COPTS --no-update-modtime --exclude-from "$EXCFILE" --retries 1 --log-file "$LOGFILE" --log-level INFO $DRYRUN
 { set +x; } 2>/dev/null
 fn_sendemail $?
 
