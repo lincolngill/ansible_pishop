@@ -15,6 +15,22 @@
     mode: u=rw,g=r,o=r
   notify: Restart minidlna
 
+- name: ufw allow port 8200 tcp
+  ufw:
+    comment: miniDLNA
+    rule: allow
+    direction: in
+    port: 8200
+    proto: tcp
+ 
+- name: ufw allow port 1900 udp
+  ufw:
+    comment: miniDLNA
+    rule: allow
+    direction: in
+    port: 1900
+    proto: udp   
+
 - name: Ensure minidlna is running
   ansible.builtin.service:
     name: minidlna
