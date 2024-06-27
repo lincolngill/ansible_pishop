@@ -30,3 +30,9 @@
     proto: udp
     delete: true
   notify: ufw_reload
+
+- name: Delete minidlna user
+  ansible.builtin.user:
+    name: minidlna
+    state: absent
+    remove: true
