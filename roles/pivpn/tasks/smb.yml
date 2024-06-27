@@ -1,0 +1,100 @@
+---
+# Setup Samba for media serving
+
+- name: Install samba
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - samba
+    - samba-common-bin
+
+- name: Start Samba service(s)
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - smbd
+    - nmbd
+
+- name: Add mediauser user
+  ansible.builtin.user:
+    name: mediauser
+    comment: Account for accessing smb media
+    create_home: false
+    shell: /usr/sbin/nologin
+    state: present
+
+- name: Include shares in /etc/samba/smb.conf
+  ansible.builtin.blockinfile:
+    path: /etc/samba/smb.conf
+    append_newline: true
+    prepend_newline: true
+    block: |
+      [Pictures]
+      path = /mnt/t7/onedrv_bkup/Pictures
+      writeable = no
+      browsable = yes
+      valid users = mediauser, {{ ansible_user }}
+      public=no
+
+      [Videos]
+      path = /mnt/t7/onedrv_bkup/Videos
+      writeable = no
+      browsable = yes
+      valid users = mediauser, {{ ansible_user }}
+      public=no
+      
+      [Music]
+      path = /mnt/t7/onedrv_bkup/Music
+      writeable = no
+      browsable = yes
+      valid users = mediauser, {{ ansible_user }}
+      public=no
+      
+      [t7]
+      path = /mnt/t7
+      writeable = no
+      browsable = yes
+      valid users = {{ ansible_user }}
+      public=no
+  notify: Restart smb
+
+- name: Create Samba users if they don't exist yet
+  shell: >
+    set -o nounset -o pipefail -o errexit &&
+    (pdbedit --user={{ item.name }} 2>&1 > /dev/null) \
+    || (echo {{ item.password }}; echo {{ item.password }}) \
+    | smbpasswd -s -a {{ item.name }}
+  args:
+    executable: /bin/bash
+  with_items: "{{ samba_users }}"
+  no_log: true
+  register: create_user_output
+  changed_when: "'Added user' in create_user_output.stdout"
+
+- name: ufw allow smb udp ports
+  ufw:
+    comment: Samba
+    rule: allow
+    direction: in
+    port: "{{ item }}"
+    proto: udp
+  loop:
+    - 137
+    - 138
+  notify: ufw_reload
+
+
+- name: ufw allow smb tcp ports
+  ufw:
+    comment: Samba
+    rule: allow
+    direction: in
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - 139
+    - 445
+  notify: ufw_reload

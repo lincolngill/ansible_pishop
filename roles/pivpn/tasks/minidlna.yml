@@ -22,6 +22,7 @@
     direction: in
     port: 8200
     proto: tcp
+  notify: ufw_reload
  
 - name: ufw allow port 1900 udp
   ufw:
@@ -29,7 +30,8 @@
     rule: allow
     direction: in
     port: 1900
-    proto: udp   
+    proto: udp
+  notify: ufw_reload   
 
 - name: Ensure minidlna is running
   ansible.builtin.service:

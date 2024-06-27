@@ -1,0 +1,32 @@
+---
+# minidlna setup
+
+- name: Uninstall minidlna
+  ansible.builtin.apt:
+    name: minidlna
+    state: absent
+
+- name: No minidlna config
+  ansible.builtin.file:
+    path: /etc/minidlna.conf
+    state: absent
+
+- name: Delete ufw allow port 8200 tcp
+  ufw:
+    comment: miniDLNA
+    rule: allow
+    direction: in
+    port: 8200
+    proto: tcp
+    delete: true
+  notify: ufw_reload
+ 
+- name: Delete ufw allow port 1900 udp
+  ufw:
+    comment: miniDLNA
+    rule: allow
+    direction: in
+    port: 1900
+    proto: udp
+    delete: true
+  notify: ufw_reload

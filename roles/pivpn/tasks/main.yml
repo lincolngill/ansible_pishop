@@ -33,5 +33,8 @@
 - import_tasks: ssh_keys.yml
   tags: sshkeys
 
-- import_tasks: minidlna.yml
-  tags: minidlna
+- import_tasks: smb.yml
+  tags: smb
+
+#- import_tasks: minidlna_uninstall.yml
+#  tags: minidlna

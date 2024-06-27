@@ -15,3 +15,11 @@
     name: minidlna
     enabled: yes
     state: restarted
+
+- name: Restart smb
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - smbd
+    - nmbd
