@@ -53,6 +53,15 @@
       valid users = mediauser, {{ ansible_user }}
       public=no
       
+      [SharedDocs]
+      path = /mnt/t7/SharedDocs
+      writeable = yes
+      create mask = 0777
+      directory mask = 0777
+      browsable = yes
+      valid users = mediauser,{{ ansible_user }}
+      public=no
+      
       [t7]
       path = /mnt/t7
       writeable = no

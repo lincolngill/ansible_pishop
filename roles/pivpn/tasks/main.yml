@@ -36,5 +36,5 @@
 - import_tasks: smb.yml
   tags: smb
 
-#- import_tasks: minidlna_uninstall.yml
-#  tags: minidlna
+- import_tasks: minidlna.yml
+  tags: minidlna
